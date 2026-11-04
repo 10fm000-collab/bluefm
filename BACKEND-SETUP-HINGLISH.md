@@ -209,27 +209,48 @@ Redeploy: `cd firebase; firebase deploy --only functions:web; cd ..`
 
 ## STEP 8 — Cashfree (payments) (10 min)
 
+> **Pehle payment hotfix lagao** (agar `bluefm-fixed.zip` naya extract kiya hai to skip):
+> `bluefm-payment-hotfix.zip` ko `bluefm` folder me extract karo (Replace All), phir
+> `npm run fb:prepare`. Ye client me asli Cashfree checkout + phone number + return
+> page add karta hai. Purana code sirf sandbox simulation jaanta tha, isliye real
+> payment pe 404 aata tha.
+
 cashfree.com → merchant dashboard → **Payment Gateway → Developers**:
 
-1. **API Keys** se Client ID + Client Secret lo (pehle **Test/Sandbox**).
-2. Secrets update:
+1. **API Keys** se Client ID + Client Secret lo. Test ke liye **Sandbox**, real paise
+   ke liye **Production** keys (KYC/activation complete hona chahiye).
+2. **Website/return domain** me `bluefm.qzz.io` add karo (aapne ye already kiya hai).
+3. Secrets update:
 
 ```powershell
 cd firebase
-firebase functions:secrets:set CASHFREE_CLIENT_ID      # real test ID
-firebase functions:secrets:set CASHFREE_CLIENT_SECRET  # real test secret
-firebase functions:secrets:set CASHFREE_ENV            # sandbox
+firebase functions:secrets:set CASHFREE_CLIENT_ID      # Client ID
+firebase functions:secrets:set CASHFREE_CLIENT_SECRET  # Client Secret
+firebase functions:secrets:set CASHFREE_ENV            # sandbox  (real ke liye: production)
 cd ..
 ```
 
-3. **Webhooks** me URL add karo:
+4. **Webhooks** me ye URL add karo (Express API wala — callable `webCashfreeWebhook`
+   NAHI, wo alag `web_*` collections use karta hai):
 ```
-https://asia-south1-nodio-575bf.cloudfunctions.net/webApi/api/payments/webhooks/cashfree
+https://bluefm.qzz.io/api/payments/webhooks/cashfree
 ```
-4. Redeploy: `cd firebase; firebase deploy --only functions:web; cd ..`
+   (Vercel `/api/*` ko webApi pe bhejta hai, isliye ye domain wala URL sahi hai.)
+5. Redeploy: `cd firebase; firebase deploy --only functions:web; cd ..`
+   Frontend bhi: `vercel --prod`
 
-**CHECK:** sandbox test card se ₹2 pass kharido → access milna chahiye.
+**Phone number:** Cashfree har payment ke liye customer ka 10-digit mobile maangta
+hai. Checkout sheet me ab phone field aata hai; ek baar bharo, account me save ho
+jaata hai, agli baar pre-filled. Galat/missing number pe server order banata hi nahi.
+
+**CHECK (sandbox):** test card se ₹2 pass kharido → Cashfree page khule → wapas
+`/payment/return` pe aaye → "Payment successful" → access milna chahiye.
 `firebase functions:log --only webApi` me `payment verified` dikhe. ✅
+
+**Real (production) pe jane se pehle:**
+- `CASHFREE_ENV` = `production`, aur Production Client ID/Secret set karo.
+- Cashfree dashboard me Production keys + website `bluefm.qzz.io` approved ho.
+- Ek chhota ₹2 real payment khud karke verify karo, phir users ko kholo.
 
 ---
 
