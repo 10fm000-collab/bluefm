@@ -18,7 +18,7 @@ cd C:\Users\User\Downloads\bluefm-fixed\bluefm
 Expand-Archive -Force "$env:USERPROFILE\Downloads\bluefm-cashfree-diag-hotfix.zip" .
 npm run fb:prepare
 cd firebase
-firebase deploy --only functions:webApi
+firebase deploy --only functions:web --project nodio-575bf
 firebase functions:log --only webApi -n 20 --project nodio-575bf
 
 CHECK: log me "Cashfree diag" line dhundo aur wo line chat me paste karo.
