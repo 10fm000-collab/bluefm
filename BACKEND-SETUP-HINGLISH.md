@@ -285,6 +285,7 @@ node scripts/make-admin.js aapka@email.com --project=nodio-575bf
 | Symptom | Fix |
 |---------|-----|
 | deploy fail | `firebase functions:log --only webApi` ka error bhejo |
+| `Container Healthcheck failed` + logs me `Named export 'logger' not found` | Functions SDK purana 6.x hai. `firebase/functions-web/package.json` me `firebase-functions` `^7.4.0` karo, `npm run fb:prepare`, phir redeploy |
 | health 500 | koi secret missing — STEP 4 dobara |
 | stories nahi dikh rahi | `node scripts/migrate-to-firebase.js --verify` |
 | login ke baad logout | cookie issue — `ALLOWED_ORIGINS` me domain hai? |
